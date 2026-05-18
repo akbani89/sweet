@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./uploads:/app/uploads
+    environment:
+      - DATABASE_URL=postgresql://glucosnap:glucosnap@db:5432/glucosnap
+      - SECRET_KEY=local-dev-secret-change-in-production
+      - DEV_MODE=true
+      - STORAGE_BACKEND=local
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: glucosnap
+      POSTGRES_PASSWORD: glucosnap
+      POSTGRES_DB: glucosnap
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glucosnap"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

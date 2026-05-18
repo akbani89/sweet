@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: glucosnap-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: glucosnap-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEV_MODE
+        value: false
+      - key: STORAGE_BACKEND
+        value: local
+
+databases:
+  - name: glucosnap-db
+    databaseName: glucosnap
+    user: glucosnap
+    plan: free
